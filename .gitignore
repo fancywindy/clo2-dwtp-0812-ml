@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+
+# Local logs / temp artifacts (generated, not source)
+results/_*.log
+results/_review_stdout.txt
+
+# OS
+.DS_Store
+Thumbs.db
