@@ -1,0 +1,20 @@
+{
+  "pre": {
+    "sliding_R2": 0.699,
+    "persist_aligned_R2": 0.895,
+    "yrand_global_mean": -0.389,
+    "yrand_global_max": -0.207
+  },
+  "doseT": {
+    "sliding_R2": 0.717,
+    "persist_aligned_R2": 0.915,
+    "yrand_global_mean": -0.404,
+    "yrand_global_max": -0.205
+  },
+  "chlo": {
+    "sliding_R2": 0.84,
+    "persist_aligned_R2": 0.908,
+    "yrand_global_mean": -0.27,
+    "yrand_global_max": -0.172
+  }
+}
