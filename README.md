@@ -96,5 +96,33 @@ Expected headline figures (sliding-window, seed 42): pre-oxidation dose
 R2 = 0.699 (95% CI 0.60–0.78); chlorite R2 = 0.840 (95% CI 0.81–0.87); both
 negative vs lag-1 persistence (MASE > 1), indistinguishable from lag-2 persistence.
 
+### Reproducibility artifacts (committed result files)
+The three JSON outputs below are **committed to `results/`** and are exactly
+reproducible by the commands above (all random seeds fixed at 42). They are the
+evidence backing the paper's robustness claims.
+
+| file | produced by | contents |
+|---|---|---|
+| `results/results_ly0812_Afix.json` | `analyze_ly0812_Afix.py` | A-class results: change-day stratification, seasonal ablation, lagged persistence (lag-1/lag-2), Diebold–Mariano (DM) tests, MASE skill scores |
+| `results/results_ly0812_review.json` | `analyze_ly0812_review.py` | bootstrap 95% CI, skill scores (ΔR², MASE), sMAPE, stratified MAPE, 50-iteration Y-randomization, sliding-window sensitivity |
+| `results/results_ly0812_supp.json` | `analyze_ly0812_supp.py` | supplementary global Y-randomization + aligned-persistence baseline for `pre`, `doseT`, `chlo` |
+
+Key figures in `results_ly0812_supp.json` (sliding-window, seed 42):
+
+| target | sliding R² | aligned-persistence R² | Y-rand mean | Y-rand max |
+|---|---|---|---|---|
+| pre | 0.699 | 0.895 | −0.389 | −0.207 |
+| doseT | 0.717 | 0.915 | −0.404 | −0.205 |
+| chlo | 0.840 | 0.908 | −0.270 | −0.172 |
+
+**Interpretation.** The Y-randomization R² values are all strongly negative and
+far below the true sliding-window R² (0.70–0.84), confirming the models learn a
+real signal rather than spurious correlation. Note: the `aligned-persistence R²`
+uses the *actual* previous observed value as a within-series naive baseline (it
+shows the series is highly autocorrelated); it is **not** the lag-persistence
+benchmark used for the paper's skill scoring (lag-1/lag-2, in the Afix/review
+files), where the model is negative vs lag-1 (MASE > 1) and indistinguishable
+from lag-2.
+
 ## License
 Code: MIT. Data: CC-BY-4.0. Please cite the paper above when using this material.
