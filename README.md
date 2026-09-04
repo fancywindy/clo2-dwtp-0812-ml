@@ -7,7 +7,7 @@ Accompanying data and code for:
 
 This repository provides a **de-identified** operational archive and the analysis
 pipeline that implements the paper's four-part template:
-(1) column-lineage audit (Box 1), (2) strictly time-aware validation
+(1) data-integrity audit (Box 1), (2) strictly time-aware validation
 (sliding-window, fold-nested KNN imputation, persistence/climatology baselines,
 Diebold–Mariano tests), (3) joint soft-sensing of pre-oxidation dose and
 finished-water chlorite, and (4) honest uncertainty + skill reporting
@@ -21,10 +21,19 @@ The treatment plant's location (Dongying, Shandong, China) is disclosed in the
 paper text by the authors' choice and is **not** present in these data files.
 No operator names or other direct identifiers are included.
 
-## ⚠️ Column-label audit note (why two data files)
-The paper's contribution includes a column-lineage audit (Box 1) that catches
-"column confusion" between similarly named dosing channels. This repository
-ships TWO files for full transparency:
+## ⚠️ Data-integrity audit note (why two data files)
+Legacy archives are rarely analysis-ready when they reach the modelling stage.
+The paper's template opens with a **data-integrity audit** (Box 1): a
+transferable preprocessing gate that checks, at the column level, channel
+identity and labelling, unit consistency across year blocks, handled-versus-true
+missingness, and the risk that automated preprocessing (imputation, unit
+conversion, automated or AI-assisted feature construction) silently changes what
+a column means. Such data-preparation failures do not stop the pipeline; they
+quietly corrupt the record and can leave a model predicting a near-copy of a
+predictor. This is a data error rather than a modelling gap, and the audit makes
+it explicit before any model is fit.
+
+This repository ships TWO files for full transparency:
 - `modeling_dataset_729.csv` — the analysis-ready, QC'd, **correctly labeled**
   set (729 daily records). The pre-oxidation dose is the `pre` column
   (0.07–1.93 mg/L, actively adjusted); the fixed terminal setpoint is `post`
@@ -32,11 +41,11 @@ ships TWO files for full transparency:
 - `plant_operations_raw_deidentified.csv` — a faithful de-identification of the
   **earlier raw parse**. Its `pre_dose` column was found by the audit to be the
   *fixed terminal dose* (0.10–0.20 mg/L), **not** the pre-oxidation dose — exactly
-  the confusion Box 1 guards against. We renamed it `terminal_dose_logged` so the
-  repository does not propagate the mislabel. The genuine pre-oxidation dose
-  time series lives only in `modeling_dataset_729.csv` (`pre`). Re-running
-  `audit_column_lineage.py` on the raw file reproduces the flag; on the modeling
-  file it passes.
+  the column-swap failure the audit guards against. We renamed it
+  `terminal_dose_logged` so the repository does not propagate the mislabel. The
+  genuine pre-oxidation dose time series lives only in
+  `modeling_dataset_729.csv` (`pre`). Re-running the audit on the raw file
+  reproduces the flag; on the modeling file it passes.
 
 ## Repository layout
 ```
@@ -49,7 +58,7 @@ code/
   analyze_ly0812_review.py               # bootstrap 95% CI, skill scores (ΔR², MASE), sMAPE,
                                          #   stratified MAPE, 50-iter Y-randomization, window sensitivity
   analyze_ly0812_supp.py                 # supplementary: global Y-randomization + aligned persistence
-  audit_column_lineage.py                # Box 1 column-lineage audit (transferable preprocessing gate)
+  audit_column_lineage.py                # implements the Box 1 data-integrity audit (preprocessing gate)
 results/                                 # JSON outputs written by the scripts above
 ```
 
@@ -90,7 +99,7 @@ cd code
 python analyze_ly0812_Afix.py      # -> ../results/results_ly0812_Afix.json
 python analyze_ly0812_review.py    # -> ../results/results_ly0812_review.json  (bootstrap CI, Y-rand)
 python analyze_ly0812_supp.py      # -> ../results/results_ly0812_supp.json
-python audit_column_lineage.py     # runs Box 1 audit on the de-identified modeling dataset (passes)
+python audit_column_lineage.py     # runs the Box 1 data-integrity audit on the modeling dataset (passes)
 ```
 Expected headline figures (sliding-window, seed 42): pre-oxidation dose
 R2 = 0.699 (95% CI 0.60–0.78); chlorite R2 = 0.840 (95% CI 0.81–0.87); both
